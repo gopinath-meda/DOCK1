@@ -1,0 +1,58 @@
+
+
+open chimera
+open pdb file/fetch by ID 7DPU
+select-> chains-> A->actions ->atom/bond->delete
+select-> resuides-> all non standed->actions->atom/bond-> ->delete
+tools-> structural editing->dock pred-> uncheck write mol2-> click oks
+file->save->pdb format-> file name REC.pdb
+select-> chains-> A->actions ->atom/bond->delete
+select-> resuides->HER-> invert->select models->actions->atom/bond-> ->delete
+tools-> structural editing->dock pred-> check write mol2-> click oks
+file->save->pdb format-> file name LIG.pdb
+
+
+open mgl tools/Autodock
+file->preferences->set-> startup directory
+import protein molecule
+edit-> delete water-> add hydrogens->
+grid-> macromolecule->choose-> REC-> save as pdbqt
+import ligand molecule
+ligand->input->choose->lig-> 
+ligand-> torsion tree->detect root-> 
+ligand-> torsion tree->detect root->choose root->
+ligand->output->save pdbqt format
+
+
+select-> chains-> A->actions ->atom/bond->delete
+select-> resuides->GOL->actions->atom/bond-> ->delete
+select-> resuides->HOH->actions->atom/bond-> ->delete
+file->save->pdb format-> file name 7dpu_HER.pdb
+
+goto Protein-Ligand Interaction Profiler toolhttps://plip-tool.biotec.tu-dresden.de/plip-web/plip/index
+upload 7dpu_HER.pdb-> analyze->
+note down residues
+
+
+select residues(26,144,145,166) in REC.pdbqt in mgl tools.
+grid-> grid box-> enter box size and active site ->file close saving current
+x:68, y:50,z:42
+center grid box:
+x:-15.34,y:13.243,z:14.098
+spacing:0.375
+grid-> set map types-> choose ligand->lig
+grid-> output-> save GPF format 7dpu.gtf
+run-> autodrid-> select file path-> launch
+
+docking-> choose ligand-> LIG
+docking-> set rigid file name-> REC.pdbqt
+docking-> search parameters-> genetic algorithm->
+docking-> output-> save 7dpu.dpf
+docking-> other options-> autodrid 4.2 parameters -> set dpf file
+run-> autodock-> select file path-> launch
+
+analyze-> docking->open-> select 7dpu.dlg
+analyze-> macromolecule-> choose->REC
+analyze-> conformations-> play
+
+visualization in pymol
